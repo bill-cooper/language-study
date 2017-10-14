@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/src/translation-tool/bin/Debug/netcoreapp1.0
+/src/translation-tool/obj/Debug/netcoreapp1.0
+/.vs
+*.dg
