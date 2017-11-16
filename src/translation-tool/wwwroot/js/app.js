@@ -8,7 +8,7 @@
     };
 
     $scope.originText = "";
-    $scope.words = [];
+    $scope.translation = {};
 
     $scope.wordPopup = function (word) {
 
@@ -54,40 +54,19 @@
     }
 
 
-    $scope.processWords = function (word) {
+    $scope.processInput = function () {
 
         $http({
             url: "/api/words/translation",
             method: "POST",
             data: { 'input': $scope.originText }
         }).then(function (response) {
-                $scope.words = response.data;
+                $scope.translation = response.data;
         });
 
     };
 })
-.controller('wordPopupCtrl', function ($scope, $http, $sce) {
 
-
-
-    $scope.wordPopover = {
-        content: 'Hello World!',
-        word: 'The Word'
-    };
-
- 
-})
-    .controller('popupCtrl', function ($scope, $http, $sce) {
-
-
-        $scope.dynamicPopover = {
-            content: 'Hello, World!',
-            templateUrl: 'myPopoverTemplate.html',
-            title: 'Title'
-        };
-
-
-    })
 
  .run(function ($rootScope) {
     $rootScope.$on('$stateChangeSuccess', function (event, args) {

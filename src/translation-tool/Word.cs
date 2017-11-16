@@ -3,8 +3,8 @@
 namespace translation_tool
 {
 
-    public class Token {
-        public Token() {
+    public class Word {
+        public Word() {
             Audios = new List<string>();
         }
         public string Value { get; set; }

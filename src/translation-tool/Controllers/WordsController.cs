@@ -16,8 +16,9 @@ namespace translation_tool.Controllers
         // POST api/values
         [HttpPost]
         [Route("translation")]
-        public async Task<IEnumerable<Token>> Translation([FromBody] TextBody textBody)
+        public async Task<Translation> Translation([FromBody] TextBody textBody)
         {
+            var translation = new Translation();
 
             var service = new TranslateService(new BaseClientService.Initializer()
             {
@@ -28,30 +29,38 @@ namespace translation_tool.Controllers
             
 
             var tokenizer = new TextTokenizer();
-            var tokens = tokenizer.GetTokens(textBody.Input);
-            //foreach (var token in tokens)
-            //{
-            //    var composition = new Composition { Return = new ContentSegment { Url = $"https://forvo.com/word/{token.Value}/#ru", Select = "span.play" } };
-            //    var elements = await composition.Return.DocumentElement();
-            //    foreach (var element in elements)
-            //    {
-            //        var onclick = element.GetAttribute("onclick");
-            //        var onclickParts = onclick.Split(',');
-            //        if (onclickParts.Count() >= 5)
-            //            token.Audios.Add(Encoding.UTF8.GetString(Convert.FromBase64String(onclickParts[4].Trim(new[] { '\'', '"' }))));
+            var blocks = tokenizer.GetBlocks(textBody.Input);
 
-            //        if (token.Audios.Count >= 5) break;
-            //    }
-            //}
-            
-            var response = await service.Translations.List(tokens.Select(t => t.Value).ToArray(), "en").ExecuteAsync();
-            
-            for (int i = 0; i < response.Translations.Count; i++)
+
+            var blockResponse = await service.Translations.List(blocks.Select(t => t.OriginalText).ToArray(), "en").ExecuteAsync();
+
+
+            for (int i = 0; i < blockResponse.Translations.Count; i++)
             {
-                tokens[i].Translation = response.Translations[i].TranslatedText;
+                blocks[i].TranslatedText = blockResponse.Translations[i].TranslatedText;
+
+
+
+                var words = tokenizer.GetWords(blocks[i].OriginalText);
+
+
+                var wordResponse = await service.Translations.List(words.Select(t => t.Value).ToArray(), "en").ExecuteAsync();
+
+
+                for (int j = 0; j < wordResponse.Translations.Count; j++)
+                {
+                    words[j].Translation = wordResponse.Translations[j].TranslatedText;
+                    blocks[i].Words.Add(words[j]);
+                }
+
+                
+                translation.Blocks.Add(blocks[i]);
             }
 
-            return tokens;
+
+
+
+            return translation;
         }
 
 
@@ -61,7 +70,7 @@ namespace translation_tool.Controllers
         public async Task<IEnumerable<string>> Post([FromBody] TextBody textBody)
         {
             var tokenizer = new TextTokenizer();
-            var tokens = tokenizer.GetTokens(textBody.Input);
+            var tokens = tokenizer.GetWords(textBody.Input);
             var audios = new List<string>();
             foreach (var token in tokens) {
                 var composition = new Composition { Return = new ContentSegment { Url = $"https://forvo.com/word/{token.Value}/#ru", Select="span.play"} };
