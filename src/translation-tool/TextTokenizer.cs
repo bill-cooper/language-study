@@ -25,7 +25,7 @@ namespace translation_tool
         {
             var blocks = new List<Block>();
 
-            var items = text.Split(new[] { '.'});
+            var items = text.Split(new[] { '!', '.', '?' });
 
             foreach (var item in items.Select(i => i.Trim()).Where(i => i != string.Empty))
             {

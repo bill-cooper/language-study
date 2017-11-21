@@ -31,11 +31,13 @@
                     <div class="panel-body">
                         <div ng-repeat="block in translation.blocks">
                             <div>
-                                <span ng-repeat="word in block.words" class="lead">
-                                    <span uib-popover-template="dynamicPopover.templateUrl" popover-title="{{word.value}} ({{word.translation}})" popover-trigger="'outsideClick'" ng-click="wordPopup(word)">{{word.value}}</span>
-                                </span>
+                                <div style="display:inline-block" ng-repeat="word in block.words" uib-popover-template="dynamicPopover.templateUrl" popover-title="{{word.value}} ({{word.translation}})" popover-trigger="'outsideClick'" ng-click="wordPopup(word)">
+                                    <div  style="display:inline-block; margin-bottom:0; padding-right: 5px;" class="lead">{{word.value}}</div>
+                                    <div style="font-size:60%; color:#808080; line-height:0; text-align:center">{{word.translation}}</div>
+                                </div>
+
                             </div>
-                            <div>
+                            <div style="padding-top:10px; padding-bottom:10px">
                                 <footer>{{block.translatedText}}</footer>
                             </div>
                         </div>
@@ -45,7 +47,11 @@
             <script type="text/ng-template" id="popup.html">
                 <div style="font-size: 14px;">
                     <div id="jquery_jplayer_1" class="cf cp-jplayer"></div>
-                    <div class="container">
+                    
+                    <h3 ng-bind-html="dynamicPopover.accentedWord | html"></h3>
+                    <div><i>{{dynamicPopover.translation}}</i></div>
+                    <div><em>base word:</em> {{dynamicPopover.derivate}}</div>
+                    <div class="container" style="padding-top: 15px">
                         <div class="row" ng-repeat="audio in dynamicPopover.audios">
                             <div class="col-md-1">
                                 <div class="audio-overlay" onclick="return audioClick(this)">

@@ -10,5 +10,6 @@ namespace translation_tool
         public string Value { get; set; }
         public string Translation { get; set; }
         public List<string> Audios { get; set; }
+        public WordInfo Info { get; set; }
     }
 }

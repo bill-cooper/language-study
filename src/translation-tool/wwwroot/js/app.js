@@ -1,4 +1,9 @@
 ﻿angular.module('app', ['ui.bootstrap'])
+.filter('html', function ($sce) {
+    return function (input) {
+        return $sce.trustAsHtml(input);
+    }
+})
 .controller('formCtrl', function ($scope, $http, $sce) {
 
     $scope.dynamicPopover = {
@@ -28,6 +33,25 @@
 
         } else {
             $scope.dynamicPopover.audios = word.audios;
+        }
+
+        if (word.info == null) {
+
+            $http({
+                url: "/api/words/info",
+                method: "POST",
+                data: { 'input': word.value }
+            }).then(function (response) {
+                word.info = response.data;
+                $scope.dynamicPopover.accentedWord = word.info.accentedWord;
+                $scope.dynamicPopover.derivate = word.info.derivate;
+                $scope.dynamicPopover.translation = word.info.translation;
+            });
+
+        } else {
+            $scope.dynamicPopover.accentedWord = word.info.accentedWord;
+            $scope.dynamicPopover.derivate = word.info.derivate;
+            $scope.dynamicPopover.translation = word.info.translation;
         }
 
         
