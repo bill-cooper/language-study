@@ -8,11 +8,10 @@
 
 
     var $ctrl = this;
-    $ctrl.modalbody = "<div>test</div>";
 
     $ctrl.animationsEnabled = true;
 
-    $ctrl.open = function (size, parentSelector) {
+    $ctrl.openModal = function (word, derivate, size, parentSelector) {
         var parentElem = parentSelector ?
           angular.element($document[0].querySelector('.modal-demo ' + parentSelector)) : undefined;
         var modalInstance = $uibModal.open({
@@ -25,8 +24,11 @@
             size: size,
             appendTo: parentElem,
             resolve: {
-                body: function () {
-                    return $ctrl.modalbody;
+                word: function () {
+                    return word;
+                },
+                derivate: function () {
+                    return derivate;
                 }
             }
         });
@@ -118,14 +120,23 @@
 
     };
 })
-.controller('ModalInstanceCtrl', function ($uibModalInstance, body) {
+.controller('ModalInstanceCtrl', function ($http, $uibModalInstance, word, derivate) {
     var $ctrl = this;
-    $ctrl.modalbody = body;
 
 
-    $ctrl.ok = function () {
-        $uibModalInstance.close($ctrl.selected.item);
-    };
+    $ctrl.modaltitle = derivate;
+    $ctrl.modalbody = "";
+
+    $http({
+        url: "/api/words/detail",
+        method: "POST",
+        data: { 'input': derivate }
+    }).then(function (response) {
+        $ctrl.modalbody = response.data;
+    });
+
+
+
 
     $ctrl.cancel = function () {
         $uibModalInstance.dismiss('cancel');

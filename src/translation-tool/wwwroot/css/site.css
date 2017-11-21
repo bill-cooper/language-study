@@ -47,3 +47,34 @@
     content: "\002D";
     font-weight: bold;
 }
+
+html.word .page.word .section.basics .info {
+    font-size: 20px;
+}
+
+.page.word .section {
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.page.word .section.basics .bare h1 {
+    display: inline-block;
+    font-size: inherit;
+    font-weight: inherit;
+    position: relative;
+    line-height: 61px;
+}
+
+.page.word .section.basics .bare {
+    font-size: 45px;
+    font-weight: 400;
+}
+
+.page.word .section .editing-infobox {
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.external-links, .more-less, .edit-error, .edit-info, .editing-infobox {
+    display:none;
+}

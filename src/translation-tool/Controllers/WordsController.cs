@@ -95,6 +95,18 @@ namespace translation_tool.Controllers
         }
 
         [HttpPost]
+        [Route("detail")]
+        public async Task<string> Detail([FromBody] TextBody textBody)
+        {
+
+            var composition = new Composition { Return = new ContentSegment { Url = $"https://en.openrussian.org/ru/{textBody.Input}", Select = "div.page" } };
+            var elements = await composition.Return.DocumentElement();
+
+
+            return elements.FirstOrDefault().OuterHtml;
+        }
+
+        [HttpPost]
         [Route("info")]
         public async Task<WordInfo> WordInfo([FromBody] TextBody textBody)
         {
@@ -108,7 +120,7 @@ namespace translation_tool.Controllers
                 //json = json.Replace("[[", "[").Replace("]]", "]");
                 var term = JsonConvert.DeserializeObject<ORTerm>(json);
 
-                if (term.Words.Length > 0)
+                if (term.Words.Length > 0 && textBody.Input.ToLower() == term.Words[0].Ru)
                 {
                     var word = term.Words[0];
                     info.Word = word.Ru;
@@ -124,7 +136,12 @@ namespace translation_tool.Controllers
                 {
                     var derivate = term.Derivates[0];
                     info.Derivate = derivate.BaseBare;
+                    if(info.Translation == string.Empty)
+                        info.Translation = derivate.Translation;
                 }
+
+                if (info.Word == string.Empty)
+                    info.Word = textBody.Input;
 
                 return info;
 

@@ -17,7 +17,7 @@
 
 
             <div ng-controller="formCtrl as $ctrl">
-                <button type="button" class="btn btn-default" ng-click="$ctrl.open()">Open me!</button>
+                
                 <form style="padding-bottom:30px">
                     <fieldset>
                         <div class="form-group">
@@ -50,7 +50,7 @@
                     
                     <h3 ng-bind-html="dynamicPopover.accentedWord | html"></h3>
                     <div><i>{{dynamicPopover.translation}}</i></div>
-                    <div><em>base word:</em> {{dynamicPopover.derivate}}</div>
+                    <div><em>base word:</em> {{dynamicPopover.derivate}} <button type="button" class="btn btn-default" ng-click="$ctrl.openModal(dynamicPopover.word, dynamicPopover.derivate, 'lg')">more...</button></div>
                     <div class="container" style="padding-top: 15px">
                         <div class="row" ng-repeat="audio in dynamicPopover.audios">
                             <div class="col-md-1">
@@ -72,14 +72,13 @@
             </script>
             <script type="text/ng-template" id="modal.html">
                 <div class="modal-header">
-                    <h3 class="modal-title" id="modal-title">I'm a modal!</h3>
+                    <h3 class="modal-title" id="modal-title" ng-bind-html="$ctrl.modaltitle | html"></h3>
                 </div>
                 <div class="modal-body" id="modal-body">
                     <div ng-bind-html="$ctrl.modalbody | html"></div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">OK</button>
-                    <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+                    <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Close</button>
                 </div>
             </script>
         </div>
