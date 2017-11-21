@@ -4,7 +4,35 @@
         return $sce.trustAsHtml(input);
     }
 })
-.controller('formCtrl', function ($scope, $http, $sce) {
+.controller('formCtrl', function ($scope, $http, $sce, $uibModal, $document) {
+
+
+    var $ctrl = this;
+    $ctrl.modalbody = "<div>test</div>";
+
+    $ctrl.animationsEnabled = true;
+
+    $ctrl.open = function (size, parentSelector) {
+        var parentElem = parentSelector ?
+          angular.element($document[0].querySelector('.modal-demo ' + parentSelector)) : undefined;
+        var modalInstance = $uibModal.open({
+            animation: $ctrl.animationsEnabled,
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'modal.html',
+            controller: 'ModalInstanceCtrl',
+            controllerAs: '$ctrl',
+            size: size,
+            appendTo: parentElem,
+            resolve: {
+                body: function () {
+                    return $ctrl.modalbody;
+                }
+            }
+        });
+    }
+
+
 
     $scope.dynamicPopover = {
         content: '',
@@ -90,7 +118,19 @@
 
     };
 })
+.controller('ModalInstanceCtrl', function ($uibModalInstance, body) {
+    var $ctrl = this;
+    $ctrl.modalbody = body;
 
+
+    $ctrl.ok = function () {
+        $uibModalInstance.close($ctrl.selected.item);
+    };
+
+    $ctrl.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+})
 
  .run(function ($rootScope) {
     $rootScope.$on('$stateChangeSuccess', function (event, args) {
