@@ -48,7 +48,14 @@
     font-weight: bold;
 }
 
-html.word .page.word .section.basics .info {
+.page.word ul, .page.word li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    display: block;
+}
+
+.page.word .section.basics .info {
     font-size: 20px;
 }
 
@@ -75,6 +82,24 @@ html.word .page.word .section.basics .info {
     text-align: center;
 }
 
-.external-links, .more-less, .edit-error, .edit-info, .editing-infobox {
+.page.word ul.tabs {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    margin: -20px 0 20px 0;
+}
+
+.external-links, .more-less, .edit-error, .edit-info, .editing-infobox, .onedit-show, .nr.handle {
     display:none;
+}
+
+ul.sentences {
+    line-height: 1.5em;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.section table {
+    
 }

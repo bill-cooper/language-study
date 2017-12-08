@@ -8,6 +8,7 @@ using Google.Apis.Translate.v2;
 using Google.Apis.Services;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace translation_tool.Controllers
 {
@@ -28,8 +29,17 @@ namespace translation_tool.Controllers
                 ApplicationName = "Project Name"
             }))
             {
+                var input = textBody.Input;
+
+                if (input.StartsWith("en:"))
+                {
+                    var russianResponse = await service.Translations.List(new string[] { input.Replace("en:","") }, "ru").ExecuteAsync();
+                    input = russianResponse.Translations[0].TranslatedText;
+                }
+
+
                 var tokenizer = new TextTokenizer();
-                var blocks = tokenizer.GetBlocks(textBody.Input);
+                var blocks = tokenizer.GetBlocks(input);
 
                 var blockResponse = await service.Translations.List(blocks.Select(t => t.OriginalText).ToArray(), "en").ExecuteAsync();
 
@@ -62,7 +72,7 @@ namespace translation_tool.Controllers
             var audios = new List<string>();
             foreach (var token in tokens)
             {
-                var composition = new Composition { Return = new ContentSegment { Url = $"https://forvo.com/word/{token.Value}/#ru", Select = "span.play" } };
+                var composition = new Composition { Return = new ContentSegment { Url = $"https://forvo.com/word/{token.Value.RemoveAccents()}/#ru", Select = "span.play" } };
                 var elements = await composition.Return.DocumentElement();
                 foreach (var element in elements)
                 {
@@ -77,22 +87,6 @@ namespace translation_tool.Controllers
             return audios;
         }
 
-        [HttpPost]
-        [Route("info2")]
-        public async Task<WordInfo> WordInfo2([FromBody] TextBody textBody)
-        {
-
-            var composition = new Composition { Return = new ContentSegment { Url = $"https://en.openrussian.org/ru/%D0%B7%D0%BD%D0%B0%D1%82%D1%8C", Select = "div.page" } };
-            var elements = await composition.Return.DocumentElement();
-            var word = elements.QuerySelectorAll("div.basics").QuerySelectorAll("h1").FirstOrDefault().TextContent.Trim();
-            var wordAudio = elements.QuerySelectorAll("div.basics").QuerySelectorAll("audio").FirstOrDefault().Attributes["src"].Value;
-            var info = elements.QuerySelectorAll("div.basics").QuerySelectorAll("div.info").FirstOrDefault().TextContent.Trim(); //ex: verb, imperfectivePartner узнатьvery often used word (#40)
-            var translation = elements.QuerySelectorAll("div.translations").QuerySelectorAll("div.content").FirstOrDefault().TextContent.Trim();
-            var sentences = elements.QuerySelectorAll("ul.sentences").FirstOrDefault().QuerySelectorAll("li").Select(li => li.TextContent.Trim()).ToArray();
-
-
-            return new translation_tool.WordInfo();
-        }
 
         [HttpPost]
         [Route("detail")]
@@ -117,7 +111,6 @@ namespace translation_tool.Controllers
                 var response = await client.GetAsync($"https://en.openrussian.org/suggestions?q={textBody.Input}");
                 response.EnsureSuccessStatusCode();
                 var json = await response.Content.ReadAsStringAsync();
-                //json = json.Replace("[[", "[").Replace("]]", "]");
                 var term = JsonConvert.DeserializeObject<ORTerm>(json);
 
                 if (term.Words.Length > 0 && textBody.Input.ToLower() == term.Words[0].Ru)

@@ -4,12 +4,27 @@
         return $sce.trustAsHtml(input);
     }
 })
+.directive('elemReady', function ($parse) {
+        return {
+            restrict: 'A',
+            link: function ($scope, elem, attrs) {
+                elem.ready(function () {
+                    $scope.$apply(function () {
+                        var func = $parse(attrs.elemReady);
+                        func($scope);
+                    })
+                })
+            }
+        }
+})
 .controller('formCtrl', function ($scope, $http, $sce, $uibModal, $document) {
 
 
     var $ctrl = this;
 
     $ctrl.animationsEnabled = true;
+
+
 
     $ctrl.openModal = function (word, derivate, size, parentSelector) {
         var parentElem = parentSelector ?
@@ -88,25 +103,6 @@
 
     };
 
-    $scope.playAudio = function (audio) {
-
-        var url = "https://audio00.forvo.com/audios/mp3/"
-        if ($(element).hasClass('active-audio')) {
-            $("#jquery_jplayer_1").jPlayer("stop");
-            $('.audio-overlay').removeClass('active-audio');
-        } else {
-
-            var url = $(element).find('a').attr('href');
-            $('.audio-overlay').removeClass('active-audio');
-            $(element).addClass('active-audio');
-            $("#jquery_jplayer_1").jPlayer("setMedia", {
-                mp3: url
-            }).jPlayer("play");
-        }
-        return false;
-
-    }
-
 
     $scope.processInput = function () {
 
@@ -120,33 +116,52 @@
 
     };
 })
-.controller('ModalInstanceCtrl', function ($http, $uibModalInstance, word, derivate) {
+.controller('ModalInstanceCtrl', function ($scope, $http, $uibModalInstance, word, derivate) {
     var $ctrl = this;
 
-
-    $ctrl.modaltitle = derivate;
-    $ctrl.modalbody = "";
+    $scope.modaltitle = derivate;
+    $scope.modalbody = "";
 
     $http({
         url: "/api/words/detail",
         method: "POST",
         data: { 'input': derivate }
     }).then(function (response) {
-        $ctrl.modalbody = response.data;
+        $scope.modalbody = response.data;
+        setTimeout(function () {
+            $('.word').find('table').addClass("table").addClass("table-bordered");
+            $('.word').find('a').each(function()
+            { 
+                this.href = this.href.replace(/^\/ru\//,
+                   "https://en.openrussian.org/ru/");
+            });
+        }, 100);
     });
 
-
+    $ctrl.writeLog = function () {
+        console.log('triggered');
+    };
 
 
     $ctrl.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };
+
+
+
+
+
+
 })
 
  .run(function ($rootScope) {
-    $rootScope.$on('$stateChangeSuccess', function (event, args) {
+     $rootScope.$on('viewContentLoaded', function (event, args) {
     });
  });
+
+angular.element(function () {
+    console.log('page loading completed');
+});
 
 
 

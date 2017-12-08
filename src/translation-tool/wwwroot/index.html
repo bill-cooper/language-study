@@ -17,7 +17,7 @@
 
 
             <div ng-controller="formCtrl as $ctrl">
-                
+
                 <form style="padding-bottom:30px">
                     <fieldset>
                         <div class="form-group">
@@ -32,7 +32,7 @@
                         <div ng-repeat="block in translation.blocks">
                             <div>
                                 <div style="display:inline-block" ng-repeat="word in block.words" uib-popover-template="dynamicPopover.templateUrl" popover-title="{{word.value}} ({{word.translation}})" popover-trigger="'outsideClick'" ng-click="wordPopup(word)">
-                                    <div  style="display:inline-block; margin-bottom:0; padding-right: 5px;" class="lead">{{word.value}}</div>
+                                    <div style="display:inline-block; margin-bottom:0; padding-right: 5px;" class="lead">{{word.value}}</div>
                                     <div style="font-size:60%; color:#808080; line-height:0; text-align:center">{{word.translation}}</div>
                                 </div>
 
@@ -47,7 +47,7 @@
             <script type="text/ng-template" id="popup.html">
                 <div style="font-size: 14px;">
                     <div id="jquery_jplayer_1" class="cf cp-jplayer"></div>
-                    
+
                     <h3 ng-bind-html="dynamicPopover.accentedWord | html"></h3>
                     <div><i>{{dynamicPopover.translation}}</i></div>
                     <div><em>base word:</em> {{dynamicPopover.derivate}} <button type="button" class="btn btn-default" ng-click="$ctrl.openModal(dynamicPopover.word, dynamicPopover.derivate, 'lg')">more...</button></div>
@@ -72,10 +72,10 @@
             </script>
             <script type="text/ng-template" id="modal.html">
                 <div class="modal-header">
-                    <h3 class="modal-title" id="modal-title" ng-bind-html="$ctrl.modaltitle | html"></h3>
+                    <h3 class="modal-title" id="modal-title" ng-bind-html="modaltitle | html"></h3>
                 </div>
                 <div class="modal-body" id="modal-body">
-                    <div ng-bind-html="$ctrl.modalbody | html"></div>
+                    <div ng-bind-html="modalbody | html" elem-ready="$ctrl.writeLog()"></div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Close</button>
@@ -114,19 +114,12 @@
 
 
         function audioClick(element) {
+            var url = $(element).find('a').attr('href');
 
-            if ($(element).hasClass('active-audio')) {
-                $("#jquery_jplayer_1").jPlayer("stop");
-                $('.audio-overlay').removeClass('active-audio');
-            } else {
-
-                var url = $(element).find('a').attr('href');
-                $('.audio-overlay').removeClass('active-audio');
-                $(element).addClass('active-audio');
-                $("#jquery_jplayer_1").jPlayer("setMedia", {
-                    mp3: url
-                }).jPlayer("play");
-            }
+            $("#jquery_jplayer_1").jPlayer("setMedia", {
+                mp3: url
+            }).jPlayer("play");
+            
             return false;
         }
 
